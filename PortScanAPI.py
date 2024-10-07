@@ -12,7 +12,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/PortScanAPI/scan', methods=['POST'])
+@app.route('/PortScanAPI.py/scan', methods=['POST'])
 def port_scan():
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
     data = request.json
