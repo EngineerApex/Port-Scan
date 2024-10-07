@@ -9,7 +9,7 @@ import threading
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/PortScanAPI.py', methods=['POST'])
+@app.route('/scan', methods=['POST'])
 def port_scan():
     print("Test 1 - works till here")
     data = request.json
@@ -63,4 +63,4 @@ def port_scan():
     return jsonify({"output": output})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=10000)
