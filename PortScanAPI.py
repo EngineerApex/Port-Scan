@@ -1,3 +1,15 @@
+import nmap
+import socket
+from flask import Flask, request, jsonify
+import io
+import sys
+from flask_cors import CORS
+import threading
+import os
+
+app = Flask(__name__)
+CORS(app)
+
 @app.route('/scan', methods=['POST'])
 def port_scan():
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
