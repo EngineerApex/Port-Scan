@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/scan1', methods=['POST'])
+@app.route('/scan', methods=['POST'])
 def port_scan():
     # Print Nmap version and path for debugging
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
