@@ -9,7 +9,7 @@ import threading
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/', methods=['POST'])
+@app.route('/scan', methods=['POST'])
 def port_scan():
     print("Test 1 - works till here")
     data = request.json
