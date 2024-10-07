@@ -30,9 +30,9 @@ def port_scan():
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
         print(f"[+] Scanningggg the target: {ip} : nmap version - {nmap.PortScanner().nmap_version()}")
-        sys.stdout.flush()
+        #sys.stdout.flush()
         print("[+] This might take a while...")
-        sys.stdout.flush()
+        #sys.stdout.flush()
 
         # Initialize the Nmap PortScanner
         nm = nmap.PortScanner()
@@ -66,4 +66,4 @@ def port_scan():
     return jsonify({"output": output})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=10000)
