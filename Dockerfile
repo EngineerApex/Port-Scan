@@ -4,6 +4,7 @@ FROM python:3.10-slim
 # Install nmap and python-nmap
 RUN apt-get update && apt-get install -y nmap && \
     pip install --no-cache-dir python-nmap && \
+    #pip3 install --no-cache-dir python3-nmap && \
     rm -rf /var/lib/apt/lists/*
 
 # Verify the installation of Nmap
@@ -20,4 +21,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . ./ 
 
 # Command to run your Flask app
-CMD ["gunicorn", "PortScanAPI:app", "--bind", "0.0.0.0:10000"]
+CMD ["PortScanAPI:app", "--bind", "127.0.0.1:10000"]
