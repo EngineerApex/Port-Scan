@@ -24,6 +24,7 @@ def port_scan():
         # Validate IP address format
         try:
             ip = socket.gethostbyname(target)
+            print(f"[DEBUG] Resolved IP: {ip}")  # Confirm resolved IP address
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
@@ -53,7 +54,7 @@ def port_scan():
                     print(f"{port}/{proto} {state} {service} {version}")
 
     except Exception as e:
-        print(f"[-] An error occurred: {e}")
+        print(f"[-] An error occurred while scanning: {str(e)}")  # Capture the error message
 
     finally:
         # Reset stdout back to default
