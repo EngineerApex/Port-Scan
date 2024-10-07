@@ -11,7 +11,7 @@ CORS(app)
 
 @app.route('/scan', methods=['POST'])
 def port_scan():
-    print("Test 1 - works till here")
+    print(f"Test 1 - works till here Nmap version: {nmap.PortScanner().nmap_version()}")
     data = request.json
     target = data.get('ip', '')
 
