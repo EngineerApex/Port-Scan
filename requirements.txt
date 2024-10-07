@@ -6,8 +6,6 @@ appdirs==1.4.4
 
 atomicwrites==1.4.0
 
-mkl-service==2.4.0
-
 Flask-Cors==5.0.0
 
 jsonpointer==2.1
