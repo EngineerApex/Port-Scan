@@ -1,5 +1,7 @@
 gunicorn
 
+flask
+
 appdirs==1.4.4
 
 atomicwrites==1.4.0
