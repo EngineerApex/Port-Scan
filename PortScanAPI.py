@@ -1,3 +1,5 @@
+#PortScanAI
+
 import nmap
 import socket
 from flask import Flask, request, jsonify
@@ -24,7 +26,6 @@ def port_scan():
         # Validate IP address format
         try:
             ip = socket.gethostbyname(target)
-            print(f"[DEBUG] Resolved IP: {ip}")  # Confirm resolved IP address
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
@@ -36,10 +37,8 @@ def port_scan():
         # Initialize the Nmap PortScanner
         nm = nmap.PortScanner()
 
-        # Scan the target IP with a simpler command
-        nm.scan(ip)  # Use a simpler scan without arguments for debugging
-
-        print(f"[DEBUG] Scan results: {nm[ip]}")  # Debug output to see what was returned
+        # Scan the target IP with specific arguments
+        nm.scan(ip, arguments='-A -Pn -T4')
 
         if not nm.all_hosts():
             print("[-] No hosts were found.")
@@ -54,7 +53,7 @@ def port_scan():
                     print(f"{port}/{proto} {state} {service} {version}")
 
     except Exception as e:
-        print(f"[-] An error occurred while scanning: {str(e)}")  # Capture the error message
+        print(f"[-] An error occurred: {e}")
 
     finally:
         # Reset stdout back to default
@@ -65,3 +64,6 @@ def port_scan():
 
     # Return the output as plain text
     return jsonify({"output": output})
+
+if __name__ == '__main__':
+    app.run(debug=True)
