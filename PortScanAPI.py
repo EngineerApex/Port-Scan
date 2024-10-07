@@ -12,7 +12,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/scan', methods=['POST'])
+@app.route('PortScanAPI.py/scan', methods=['POST'])
 def port_scan():
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
     data = request.json
@@ -29,7 +29,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        print(f"[+] Scanningggg the target: {ip} : nmap version - {nmap.PortScanner().nmap_version()}")
+        print(f"[+] Scanning the target: {ip} : nmap version - {nmap.PortScanner().nmap_version()}")
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
