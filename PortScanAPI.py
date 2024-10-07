@@ -40,17 +40,15 @@ def port_scan():
         # Scan the target IP with specific arguments
         nm.scan(ip, arguments='-A -Pn -T4')
 
-        if not nm.all_hosts():
-            print("[-] No hosts were found.")
-        else:
-            for proto in nm[ip].all_protocols():
-                print(f"\nProtocol: {proto}")
-                lport = nm[ip][proto].keys()
-                for port in sorted(lport):
-                    state = nm[ip][proto][port]['state']
-                    service = nm[ip][proto][port]['name']
-                    version = nm[ip][proto][port].get('version', 'N/A')  # Get version if available
-                    print(f"{port}/{proto} {state} {service} {version}")
+        
+        for proto in nm[ip].all_protocols():
+            print(f"\nProtocol: {proto}")
+            lport = nm[ip][proto].keys()
+            for port in sorted(lport):
+                state = nm[ip][proto][port]['state']
+                service = nm[ip][proto][port]['name']
+                version = nm[ip][proto][port].get('version', 'N/A')  # Get version if available
+                print(f"{port}/{proto} {state} {service} {version}")
 
     except Exception as e:
         print(f"[-] An error occurred: {e}")
