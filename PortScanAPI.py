@@ -26,7 +26,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        print(f"[+] Scanning the target: {ip}")
+        print(f"[+] Scanningggg the target: {ip}")
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
