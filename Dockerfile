@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of your application code
-COPY . .
+COPY . ./
 
 # Command to run your Flask app
 CMD ["gunicorn", "PortScanAPI:app", "--bind", "0.0.0.0:10000"]
