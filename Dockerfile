@@ -3,6 +3,7 @@ FROM python:3.10-slim
 
 # Install nmap
 RUN apt-get update && apt-get install -y nmap && rm -rf /var/lib/apt/lists/*
+RUN nmap --version
 
 # Set the working directory
 WORKDIR /app
