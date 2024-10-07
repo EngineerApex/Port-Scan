@@ -1,15 +1,3 @@
-import nmap
-import socket
-from flask import Flask, request, jsonify
-import io
-import sys
-from flask_cors import CORS
-import threading
-import os
-
-app = Flask(__name__)
-CORS(app)
-
 @app.route('/scan', methods=['POST'])
 def port_scan():
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
@@ -35,8 +23,10 @@ def port_scan():
         # Initialize the Nmap PortScanner
         nm = nmap.PortScanner()
 
-        # Scan the target IP with specific arguments
-        nm.scan(ip, arguments='-A -Pn -T4')
+        # Scan the target IP with a simpler command
+        nm.scan(ip)  # Use a simpler scan without arguments for debugging
+
+        print(f"[DEBUG] Scan results: {nm[ip]}")  # Debug output to see what was returned
 
         if not nm.all_hosts():
             print("[-] No hosts were found.")
@@ -62,6 +52,3 @@ def port_scan():
 
     # Return the output as plain text
     return jsonify({"output": output})
-
-if __name__ == '__main__':
-    app.run(debug=True)
