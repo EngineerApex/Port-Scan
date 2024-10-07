@@ -11,6 +11,7 @@ CORS(app)
 
 @app.route('/PortScanAPI.py', methods=['POST'])
 def port_scan():
+    print("Test 1 - works till here")
     data = request.json
     target = data.get('ip', '')
 
