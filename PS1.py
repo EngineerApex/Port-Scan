@@ -38,7 +38,7 @@ def port_scan():
         nm = nmap.PortScanner()
 
         # Scan the target IP with modified arguments for better results
-        nm.scan(ip, arguments='-sS -Pn -T4')
+        nm.scan(ip, arguments='-A -Pn -T4')
 
         # Check if any hosts were found
         if not nm.all_hosts():
