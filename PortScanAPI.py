@@ -40,7 +40,7 @@ def port_scan():
                     urllist.append(url_join)
                     #print(url_join)
                     if not url_join_sample:  # Store the first matching URL
-                        url_join_sample = full_url
+                        url_join_sample = url_join
                         #print(full_url)  # Print each matching URL
             else:
                 pass
