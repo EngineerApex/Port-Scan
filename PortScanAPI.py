@@ -18,6 +18,7 @@ CORS(app)
 def port_scan():
     visited_urls = set()
     urllist = []
+    url_join_sample = None
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
     print(f"nmap.PortScanner().all_hosts(): {nmap.PortScanner().all_hosts()}")
 
@@ -35,11 +36,16 @@ def port_scan():
             if urls2 not in visited_urls:
                 visited_urls.add(urls2)
                 url_join = urljoin("https://www.yahoo.com", urls2)
-                    if "yahoo" in url_join:
+                if "yahoo" in url_join:
                     urllist.append(url_join)
-                    print(url_join)                
+                    #print(url_join)
+                    if not url_join_sample:  # Store the first matching URL
+                        url_join_sample = full_url
+                        #print(full_url)  # Print each matching URL
             else:
                 pass
+    else:
+        print("[-] Failed to retrieve the webpage.")
     
     data = request.json
     target = data.get('ip', '')
@@ -55,7 +61,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        print(f"[+] Scanning the target: {ip} : urljoin {url_join}")
+        print(f"[+] Scanning the target: {ip} : Sample URL: {url_sample_output}")
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
