@@ -33,7 +33,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        print("[+] Scanning the target: {} : nmap version - {} ".format(ip, nmap.PortScanner().all_hosts())
+        print("[+] Scanning the target: {} : nmap version - {} ".format(ip, nmap.PortScanner().all_hosts()))
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
