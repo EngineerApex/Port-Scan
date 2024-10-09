@@ -16,39 +16,9 @@ CORS(app)
 
 @app.route('/scan', methods=['POST'])
 def port_scan():
-    visited_urls = set()
-    urllist = []
-    url_join_sample = None
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
     print(f"nmap.PortScanner().all_hosts(): {nmap.PortScanner().all_hosts()}")
 
-    response = requests.get("https://www.yahoo.com")
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'html.parser')
-        a_tag = soup.find_all("a")
-        found_count = 0
-        urls = []   #this list will contain all the links that our code has found on the website
-        for tag in a_tag:
-            href = tag.get("href")
-            if href is not None and href != "":
-                urls.append(href)
-        
-        for urls2 in urls:
-            if urls2 not in visited_urls:
-                visited_urls.add(urls2)
-                url_join = urljoin("https://www.yahoo.com", urls2)
-                if "yahoo" in url_join:
-                    urllist.append(url_join)
-                    found_count = found_count + 1
-                    #print(url_join)
-                    if found_count == 2:  # Store the first matching URL
-                        url_join_second = url_join
-                        #print(full_url)  # Print each matching URL
-            else:
-                pass
-    else:
-        print("[-] Failed to retrieve the webpage.")
-    
     data = request.json
     target = data.get('ip', '')
 
@@ -63,8 +33,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        url_sample_output = url_join_second if url_join_second else "No matching URL found"
-        print(f"[+] Scanning the target: {ip} : Sample URL: {url_sample_output}")
+        print("[+] Scanning the target: {} : nmap version - {} ".format(ip, nmap.PortScanner().all_hosts())
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
