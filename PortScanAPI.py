@@ -61,6 +61,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
+        url_sample_output = url_join_sample if url_join_sample else "No matching URL found"
         print(f"[+] Scanning the target: {ip} : Sample URL: {url_sample_output}")
         sys.stdout.flush()
         print("[+] This might take a while...")
