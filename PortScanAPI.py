@@ -16,25 +16,30 @@ CORS(app)
 
 @app.route('/scan', methods=['POST'])
 def port_scan():
+    visited_urls = set()
     urllist = []
     print(f"Test 1 - works till here Nmap version: {os.popen('which nmap').read()} hellooooo")
     print(f"nmap.PortScanner().all_hosts(): {nmap.PortScanner().all_hosts()}")
 
     response = requests.get("https://www.yahoo.com")
     if response.status_code == 200:
-    soup = BeautifulSoup(response.content, 'html.parser')
-    a_tag = soup.find_all("a")
-    urls = []   #this list will contain all the links that our code has found on the website
-    
-    for urls2 in urls:
-        if urls2 not in visited_urls:
-            visited_urls.add(urls2)
-            url_join = urljoin(url, urls2)
-            if keyword in url_join:
-                urllist.append(url_join)
-                print(url_join)                
-        else:
-            pass
+        soup = BeautifulSoup(response.content, 'html.parser')
+        a_tag = soup.find_all("a")
+        urls = []   #this list will contain all the links that our code has found on the website
+        for tag in a_tag:
+            href = tag.get("href")
+            if href is not None and href != "":
+                urls.append(href)
+        
+        for urls2 in urls:
+            if urls2 not in visited_urls:
+                visited_urls.add(urls2)
+                url_join = urljoin("https://www.yahoo.com", urls2)
+                    if "yahoo" in url_join:
+                    urllist.append(url_join)
+                    print(url_join)                
+            else:
+                pass
     
     data = request.json
     target = data.get('ip', '')
@@ -50,7 +55,7 @@ def port_scan():
         except socket.gaierror:
             return jsonify({"output": "[-] Invalid hostname or IP address"}), 400
 
-        print(f"[+] Scanning the target: {ip} : nmap version - {nmap.PortScanner().all_hosts()} {url_join}")
+        print(f"[+] Scanning the target: {ip} : urljoin {url_join}")
         sys.stdout.flush()
         print("[+] This might take a while...")
         sys.stdout.flush()
