@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response, jsonify
 import requests
 from flask_cors import CORS
+import time
 
 app = Flask(__name__)
 CORS(app)
 
-# Wordlist of 50 common directories
 wordlist = [
     "admin", "login", "user", "dashboard", "uploads", "assets", "css", "js", "images", "backup",
     "api", "config", "downloads", "docs", "includes", "lib", "public", "private", "test", "temp",
@@ -14,52 +14,49 @@ wordlist = [
     "media", "sitemap", "robots.txt", "api-docs", "status", "database", "vulnerabilities", "index"
 ]
 
+scanned_results = []  # Global variable to store results
 
-# Function to perform the directory brute force
-def brute_force_directories(url):
-    results = []
-    # Ensure the URL starts with http:// or https://
+# Function to perform the directory brute force without printing "Not Found" URLs
+def stream_brute_force_directories(url):
+    global scanned_results
+    scanned_results = []  # Clear previous results
+
     if not url.startswith("http"):
         url = "http://" + url
 
     for word in wordlist:
-        # Build the full URL to check
         full_url = f"{url}/{word}"
-
         try:
-            # Make a GET request to the URL
             response = requests.get(full_url)
-
-            # Check if the directory exists (status code 200 or 403)
             if response.status_code == 200 or response.status_code == 403:
                 result = f"[+] Found: {full_url} (Status: {response.status_code})"
-                results.append(result)
-            else:
-                result = f"[-] Not Found: {full_url} (Status: {response.status_code})"
-                results.append(result)
-
+                scanned_results.append(result)  # Only append found URLs
         except requests.exceptions.RequestException as e:
-            error_message = f"[!] Error accessing {full_url}: {e}"
-            results.append(error_message)
+            scanned_results.append(f"[!] Error accessing {full_url}: {e}")
+        time.sleep(0.2)  # Simulate real-time processing
 
-    return results
+    return scanned_results
 
-
-# Define the API endpoint for the directory brute force
 @app.route('/bruteforce', methods=['POST'])
-def brute_force_api():
+def start_scan():
     data = request.json
     target_url = data.get('url', '')
 
     if not target_url:
         return jsonify({"error": "URL is required"}), 400
 
-    # Call the brute force function and get results
-    results = brute_force_directories(target_url)
+    # Start the brute force scan
+    stream_brute_force_directories(target_url)
+    return jsonify({"message": "Scan initiated"})
 
-    # Return the results as a JSON response
-    return jsonify({"output": "\n".join(results)})
+@app.route('/bruteforce-stream', methods=['GET'])
+def stream_results():
+    def event_stream():
+        for result in scanned_results:
+            yield f"data:{result}\n\n"
+            time.sleep(0.1)  # Simulate streaming delay
 
+    return Response(event_stream(), content_type='text/event-stream')
 
 if __name__ == '__main__':
     app.run(debug=True)
