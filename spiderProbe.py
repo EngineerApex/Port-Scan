@@ -15,8 +15,8 @@ important_links = []  # Store the links to be streamed
 def spider_urls(url, keyword, domain):
     try:
         response = requests.get(url)
-    except:
-        print(f"Request failed: {url}")
+    except Exception as e:
+        print(f"Request failed: {url} - {e}")
         return []
 
     url_links = []
@@ -50,7 +50,7 @@ def spider_probe(url_list):
             yield f"data: [-] Dead: {url}\n\n"
         time.sleep(0.5)  # Optional delay to simulate real-time streaming
 
-# Endpoint to initiate spidering and set up for streaming
+# Combined endpoint to initiate spidering and stream results
 @app.route('/spider', methods=['POST'])
 def spider_endpoint():
     data = request.get_json()
@@ -68,11 +68,10 @@ def spider_endpoint():
     domain = urlparse(url).netloc
     important_links = spider_urls(url, keyword, domain)  # Store links for streaming
 
-    return Response("Spidering initiated.", status=200)
+    if not important_links:
+        return Response("No links found for the given keyword.", status=200)
 
-# SSE endpoint to stream results
-@app.route('/spider-stream')
-def spider_stream():
+    # Stream the probing results
     return Response(stream_with_context(spider_probe(important_links)), mimetype='text/event-stream')
 
 if __name__ == "__main__":
