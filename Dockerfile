@@ -23,3 +23,6 @@ COPY . ./
 # Command to run your Flask app
 CMD ["gunicorn", "PortScanAPI:app", "--bind", "0.0.0.0:10000"]
 CMD ["gunicorn", "webscrape:app", "--bind", "0.0.0.0:10000"]
+CMD ["gunicorn", "spiderProbe:app", "--bind", "0.0.0.0:10000"]
+CMD ["gunicorn", "directoryBF:app", "--bind", "0.0.0.0:10000"]
+CMD ["gunicorn", "subdomainBF:app", "--bind", "0.0.0.0:10000"]
