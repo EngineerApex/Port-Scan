@@ -72,7 +72,7 @@ def spider_endpoint():
         return Response("No links found for the given keyword.", status=200)
 
     # Stream the probing results
-    return Response(stream_with_context(spider_probe(important_links)), mimetype='text/event-stream')
+    return Response(stream_with_context(spider_probe(important_links)), mimetype='text/plain')
 
 if __name__ == "__main__":
     app.run(debug=True)
