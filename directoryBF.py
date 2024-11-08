@@ -49,7 +49,7 @@ def start_scan():
 
     return jsonify({"message": "Scan initiated. Use /bruteforce-stream to get results."}), 200
 
-@app.route('/bruteforce-stream', methods=['GET'])
+@app.route('/bruteforce', methods=['GET'])
 def stream_results():
     def event_stream():
         for result in scanned_results:
