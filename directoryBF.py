@@ -13,6 +13,8 @@ wordlist = [
     "files", "about", "contact", "faq", "help", "news", "support", "blog", "wp-admin", "wp-content", "uploads",
     "media", "sitemap", "robots.txt", "api-docs", "status", "database", "vulnerabilities", "index"
 ]
+
+
 scanned_results = []  # Global variable to store results
 
 # Function to perform the directory brute force
@@ -34,7 +36,6 @@ def stream_brute_force_directories(url):
             scanned_results.append(f"[!] Error accessing {full_url}: {e}")
         time.sleep(0.2)  # Simulate real-time processing
 
-# Combined endpoint to initiate brute force and stream results
 @app.route('/bruteforce', methods=['POST'])
 def start_scan():
     data = request.json
@@ -46,16 +47,16 @@ def start_scan():
     # Start the brute force scan in a separate thread
     stream_brute_force_directories(target_url)
 
-    # Stream the results immediately
-    return Response(stream_results(), content_type='text/event-stream')
+    return jsonify({"message": "Scan initiated. Use /bruteforce-stream to get results."}), 200
 
+@app.route('/bruteforce-stream', methods=['GET'])
 def stream_results():
     def event_stream():
         for result in scanned_results:
             yield f"data:{result}\n\n"
             time.sleep(0.1)  # Simulate streaming delay
 
-    return event_stream()
+    return Response(event_stream(), content_type='text/event-stream')
 
 if __name__ == '__main__':
     app.run(debug=True)
