@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y nmap && \
     rm -rf /var/lib/apt/lists/*
 
 # Verify the installation of Nmap
-RUN nmap --version
+#RUN nmap --version
 
 # Set the working directory
 WORKDIR /app
