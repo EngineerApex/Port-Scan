@@ -281,7 +281,7 @@ def spider_endpoint():
     except requests.RequestException as e:
         return Response(f"Failed to process the request: {e}", status=500)
 ############################################################
-'''
+
 visited_urls = set()
 important_links = []  # Store the links to be streamed
 
@@ -348,7 +348,59 @@ def spider_endpoint():
 @app.route('/spider-stream')
 def spider_stream():
     return Response(stream_with_context(spider_probe(important_links)), mimetype='text/event-stream')
+#######################################
+'''
+@app.route('/spider', methods=['POST'])
+def spider_endpoint():
+    data = request.get_json()
+    url = data.get("url")
+    keyword = data.get("keyword")
 
+    if not url or not keyword:
+        return Response("Both 'url' and 'keyword' are required", status=400)
+
+    if not url.startswith(("http://", "https://")):
+        return Response("Invalid URL format. Please include http:// or https://", status=400)
+
+    try:
+        # Fetch the initial page
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        a_tags = soup.find_all("a")
+
+        # Extract links containing the keyword
+        links = []
+        parsed_domain = urlparse(url).netloc
+        for tag in a_tags:
+            href = tag.get("href")
+            if href and keyword in href:
+                full_url = urljoin(url, href)
+                # Check same domain if desired
+                if urlparse(full_url).netloc == parsed_domain:
+                    links.append(full_url)
+
+        if not links:
+            return Response("No links found for the given keyword.", status=200)
+
+        # Probe each link for activity
+        results = []
+        for link in links:
+            try:
+                head_resp = requests.head(link, timeout=5)
+                if head_resp.status_code == 200:
+                    results.append(f"[+] Active: {link}")
+                else:
+                    results.append(f"[-] Dead: {link}")
+            except requests.exceptions.RequestException:
+                results.append(f"[-] Dead: {link}")
+
+        # Return all results as plain text
+        return Response("\n".join(results), mimetype='text/plain')
+
+    except requests.RequestException as e:
+        return Response(f"Failed to process the request: {e}", status=500)
 #######################################
 # Webscrape (Fourth Code)
 #######################################
