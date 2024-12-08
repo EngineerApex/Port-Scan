@@ -105,6 +105,7 @@ def stream_results_subd():
 #######################################
 # Spider and Probe (Third Code)
 #######################################
+'''
 visited_urls = set()
 important_links = []  # For spider
 def spider_urls(url, keyword, domain):
@@ -159,6 +160,72 @@ def spider_endpoint():
     visited_urls = set()
     domain = urlparse(url).netloc
     important_links = spider_urls(url, keyword, domain)
+
+    if not important_links:
+        return Response("No links found for the given keyword.", status=200)
+
+    return Response(stream_with_context(spider_probe(important_links)), mimetype='text/plain')
+'''
+visited_urls = set()
+
+def spider_urls(url, keyword, domain, max_links=50):
+    # Non-recursive approach: just scan this page and stop.
+    # Or if you want multi-level, implement a queue-based approach with a limit.
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"Request failed: {url} - {e}")
+        return []
+
+    found_links = []
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        a_tags = soup.find_all("a")
+        urls = [tag.get("href") for tag in a_tags if tag.get("href")]
+
+        # Limit how many links we process to prevent timeouts
+        for link in urls[:max_links]:
+            if link not in visited_urls:
+                url_join = urljoin(url, link)
+                parsed_url = urlparse(url_join)
+                if domain in parsed_url.netloc:
+                    visited_urls.add(link)
+                    if keyword in url_join:
+                        # Just store links found in one level
+                        # If you want multi-level scanning, you'd add them to a queue and process iteratively.
+                        found_links.append(url_join)
+    return found_links
+
+def spider_probe(url_list):
+    # Remove sleeps and yield responses as quickly as possible
+    for url in url_list:
+        try:
+            response = requests.head(url, timeout=5)
+            if response.status_code == 200:
+                yield f"data: [+] Active: {url}\n\n"
+            else:
+                yield f"data: [-] Dead: {url}\n\n"
+        except requests.exceptions.RequestException:
+            yield f"data: [-] Dead: {url}\n\n"
+
+@app.route('/spider', methods=['POST'])
+def spider_endpoint():
+    data = request.get_json()
+    url = data.get("url")
+    keyword = data.get("keyword")
+
+    if not url or not keyword:
+        return Response("Both 'url' and 'keyword' are required", status=400)
+
+    if not url.startswith(("http://", "https://")):
+        return Response("Invalid URL format. Please include http:// or https://", status=400)
+
+    global visited_urls
+    visited_urls = set()
+    domain = urlparse(url).netloc
+    # Limit to a small number of links
+    important_links = spider_urls(url, keyword, domain, max_links=20)
 
     if not important_links:
         return Response("No links found for the given keyword.", status=200)
